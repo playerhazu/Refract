@@ -1,3 +1,9 @@
+use std::env;
+
+mod utils;
+
 fn main() {
-    println!("Hello, world!");
+    let args: Vec<String> = env::args().collect();
+
+    utils::process_command(&args);
 }
