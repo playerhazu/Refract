@@ -57,6 +57,18 @@ fn build() {
             .expect("Error trying to execute init.sh");
     }
 
+    if PathBuf::from(&profile_dir).join("sub.sh").exists() {
+        println!("Executing sub.sh...");
+
+        let child = Command::new("bash")
+            .arg(format!("{}/sub.sh", &profile_dir))
+            .spawn()
+            .expect("Error trying to execute sub.sh");
+
+        println!("sub.sh running at PID: {}", child.id());
+        drop(child);
+    }
+
     println!("The profile has been built.");
 }
 
