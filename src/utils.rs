@@ -103,6 +103,12 @@ fn update() {
         .arg("pull")
         .status()
         .expect("Error trying to clone repo");
+
+    Command::new("cargo")
+        .current_dir(core_dir)
+        .args(["build", "--release"])
+        .status()
+        .expect("Error trying to build repo");
 }
 
 fn patch(name: &String) {}
