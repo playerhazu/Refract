@@ -97,7 +97,7 @@ fn profile_list() {
 
 fn update() {
     let user_env = env::var("USER").unwrap_or_default();
-    let core_str = format!("/home/{}/.refract/core", user_env);
+    let core_str = format!("/home/{}/.refract/core/Refract", user_env);
     let core_dir = Path::new(core_str.as_str());
 
     Command::new("git")
@@ -177,8 +177,13 @@ fn setup() {
     }
 
     for value in directories.iter() {
-        fs::create_dir(format!("{}/{}", base_dir, value)).expect("Error trying to create dir");
+        let new_dir = format!("{}/{}", base_dir, value);
+
+        println!("Creating directory {}", &new_dir);
+        fs::create_dir(&new_dir).expect("Error trying to create dir");
     }
+
+    println!("Construction of the Refract environment has been completed...");
 }
 
 pub fn process_command(args: &[String]) {
