@@ -5,8 +5,6 @@ use std::io::BufRead;
 use std::path::{Path, PathBuf};
 use std::process::Command;
 
-fn help() {}
-
 fn build() {
     let user_env = env::var("USER").unwrap_or_default();
 
@@ -184,6 +182,21 @@ fn setup() {
     }
 
     println!("Construction of the Refract environment has been completed...");
+}
+
+fn help() {
+    println!("setup: Build the refract envrionment.");
+    println!("update: Update your refract to the latest version.");
+    println!("patch [name]: Installs a prisma patch (ONLY FOR PRISMA USERS)");
+    println!("install [path]: Install a refract package by providing the refract file.");
+    println!("remove [name]: Deletes a refract package by name.");
+    println!("list: Gives a list of your available refract packages.");
+    println!("set-env [variable] [new value]: Updates a refract environment variable.");
+    println!("profile-list: Provide a list of your available profiles.");
+    println!(
+        "profile [name]: Update the current profile to another by providing the profile name."
+    );
+    println!("build: Builds the current profile by re-reading its linker.");
 }
 
 pub fn process_command(args: &[String]) {
