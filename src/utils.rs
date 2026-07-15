@@ -138,9 +138,11 @@ fn update() {
         .expect("Error trying to build repo");
 }
 
-fn patch(name: &String) {}
+fn patch(name: &String) {
+    println!("wip uwu {}", name);
+}
 
-fn set_env(var: &String, value: &String) {}
+fn analyze(route: &String) {}
 
 fn install(route: &String) {}
 
@@ -181,7 +183,7 @@ fn setup() {
     .expect("Error trying to create environment file");
 
     fs::write(format!("{}/.version", base_dir), env!("CARGO_PKG_VERSION"))
-        .expect("Error trying to create versihttps://github.com/playerhazu/Refract.giton file");
+        .expect("Error trying to create version file");
 
     fs::write(format!("{}/.profile", base_dir), "").expect("Error trying to create profile file");
 
@@ -214,7 +216,7 @@ fn setup() {
         fs::create_dir(&new_dir).expect("Error trying to create dir");
     }
 
-    println!("Construction of the Refract environment has been completed...");
+    println!("Build of the Refract environment has been completed...");
 }
 
 fn help() {
@@ -222,9 +224,9 @@ fn help() {
     println!("> update: Update your refract to the latest version.");
     println!("> patch [name]: Installs a prisma patch (ONLY FOR PRISMA USERS)");
     println!("> install [path]: Install a refract package by providing the refract file.");
+    println!("> analyze [path]: Analyze a refract package by providing the refract file.");
     println!("> remove [name]: Deletes a refract package by name.");
     println!("> list: Gives a list of your available refract packages.");
-    println!("> set-env [variable] [new value]: Updates a refract environment variable.");
     println!("> profile-list: Provide a list of your available profiles.");
     println!(
         "> profile [name]: Update the current profile to another by providing the profile name."
@@ -264,11 +266,11 @@ pub fn process_command(args: &[String]) {
         "setup" => setup(),
         "patch" => patch(&args[2]),
         "profile" => profile(&args[2]),
-        "set-env" => set_env(&args[2], &args[3]),
         "install" => install(&args[2]),
         "update" => update(),
         "remove" => remove(&args[2]),
         "list" => list(),
+        "analyze" => analyze(&args[2]),
         "profile-list" => profile_list(),
         "help" => help(),
         _ => help(),
