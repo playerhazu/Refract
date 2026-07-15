@@ -11,7 +11,7 @@ fn build() {
     let user_env = env::var("USER").unwrap_or_default();
 
     let base_dir = format!("/home/{}/.refract", user_env);
-    let selected_profile = fs::read_to_string(format!("{}/profile", base_dir))
+    let selected_profile = fs::read_to_string(format!("{}/.profile", base_dir))
         .expect("Error trying to get current profile");
 
     let profile_dir = format!("{}/profiles/{}", base_dir, selected_profile);
@@ -68,7 +68,7 @@ fn profile(new_profile: &String) {
     }
 
     if validation {
-        fs::write(format!("{}/profile", base_dir), new_profile)
+        fs::write(format!("{}/.profile", base_dir), new_profile)
             .expect("Error trying to update profile");
 
         println!("Building new profile...");
@@ -95,7 +95,17 @@ fn profile_list() {
     }
 }
 
-fn update() {}
+fn update() {
+    let user_env = env::var("USER").unwrap_or_default();
+    let core_str = format!("/home/{}/.refract/core", user_env);
+    let core_dir = Path::new(core_str.as_str());
+
+    Command::new("git")
+        .current_dir(core_dir)
+        .arg("pull")
+        .status()
+        .expect("Error trying to clone repo");
+}
 
 fn patch(name: &String) {}
 
@@ -125,17 +135,13 @@ fn setup() {
     let home = env::var("USER").unwrap_or_default();
     let base_dir = format!("/home/{}/.refract", home);
 
-    fs::create_dir_all(&base_dir).expect("Error trying to create base dir");
-    println!("Base directory created at {}", base_dir);
-
-    let directories = ["packages", "profiles", "temp"];
-
-    for value in directories.iter() {
-        fs::create_dir(format!("{}/{}", base_dir, value)).expect("Error trying to create dir");
+    if !PathBuf::from(&base_dir).is_dir() {
+        fs::create_dir_all(&base_dir).expect("Error trying to create base dir");
+        println!("Base directory created at {}", base_dir);
     }
 
     fs::write(
-        format!("{}/environment", base_dir),
+        format!("{}/.environment", base_dir),
         format!(
             "PackagesDir: {}/packages\nProfilesDir: {}/profiles",
             base_dir, base_dir
@@ -143,10 +149,36 @@ fn setup() {
     )
     .expect("Error trying to create environment file");
 
-    fs::write(format!("{}/version", base_dir), env!("CARGO_PKG_VERSION"))
-        .expect("Error trying to create version file");
+    fs::write(format!("{}/.version", base_dir), env!("CARGO_PKG_VERSION"))
+        .expect("Error trying to create versihttps://github.com/playerhazu/Refract.giton file");
 
-    fs::write(format!("{}/profile", base_dir), "").expect("Error trying to create profile file");
+    fs::write(format!("{}/.profile", base_dir), "").expect("Error trying to create profile file");
+
+    fs::write(
+        format!("{}/.repo", base_dir),
+        "https://github.com/playerhazu/Refract",
+    )
+    .expect("Error trying to create repo file");
+
+    let directories = ["packages", "profiles"];
+    let core_dir = format!("{}/core", base_dir);
+
+    if !PathBuf::from(&core_dir).is_dir() {
+        let repo = fs::read_to_string(Path::new(format!("/home{}/.refract/.repo", home).as_str()))
+            .unwrap_or_default();
+
+        fs::create_dir_all(&core_dir).expect("Error trying to create core dir");
+
+        Command::new("git")
+            .current_dir(&core_dir)
+            .args(["clone", &repo])
+            .status()
+            .expect("Error trying to clone repository");
+    }
+
+    for value in directories.iter() {
+        fs::create_dir(format!("{}/{}", base_dir, value)).expect("Error trying to create dir");
+    }
 }
 
 pub fn process_command(args: &[String]) {
@@ -163,10 +195,17 @@ pub fn process_command(args: &[String]) {
             env::var("USER").unwrap_or_default()
         ))
         .is_dir()
+        && !PathBuf::from(format!(
+            "/home/{}/.refract/.repo",
+            env::var("USER").unwrap_or_default()
+        ))
+        .is_file()
     {
         println!(
             "No Refract environment has been created; use the `setup` command or create it manually."
         );
+
+        return;
     }
 
     match command.as_str() {
