@@ -48,6 +48,15 @@ fn build() {
         }
     }
 
+    if PathBuf::from(&profile_dir).join("init.sh").exists() {
+        println!("Executing init.sh...");
+
+        Command::new("bash")
+            .arg(format!("{}/init.sh", &profile_dir))
+            .output()
+            .expect("Error trying to execute init.sh");
+    }
+
     println!("The profile has been built.");
 }
 
