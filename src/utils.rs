@@ -190,16 +190,16 @@ pub fn process_command(args: &[String]) {
 
     if command != "setup"
         && command != "help"
-        && !PathBuf::from(format!(
+        && (!PathBuf::from(format!(
             "/home/{}/.refract",
             env::var("USER").unwrap_or_default()
         ))
         .is_dir()
-        && !PathBuf::from(format!(
-            "/home/{}/.refract/.repo",
-            env::var("USER").unwrap_or_default()
-        ))
-        .is_file()
+            || !PathBuf::from(format!(
+                "/home/{}/.refract/.repo",
+                env::var("USER").unwrap_or_default()
+            ))
+            .is_file())
     {
         println!(
             "No Refract environment has been created; use the `setup` command or create it manually."
