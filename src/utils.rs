@@ -35,6 +35,8 @@ fn build() {
                 fs::remove_dir_all(path).expect("Error trying to replace directory");
             }
 
+            println!("Linking {} to {}...", parts[0], parts[1]);
+
             Command::new("cp")
                 .arg("-r")
                 .arg(parts[0].as_str().trim())
@@ -42,7 +44,7 @@ fn build() {
                 .status()
                 .expect("Error trying to link file or directory");
 
-            println!("{} was linked to {}", parts[0], parts[1]);
+            println!("{} was linked to {}!", parts[0], parts[1]);
         }
     }
 
